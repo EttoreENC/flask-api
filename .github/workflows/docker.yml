@@ -1,0 +1,16 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v2
+
+    - name: Build da imagem Docker
+      run: docker build -t flask-api .
