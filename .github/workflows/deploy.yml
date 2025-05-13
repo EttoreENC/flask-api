@@ -1,0 +1,28 @@
+name: Deploy to AWS EC2 via SSH
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v2
+
+    - name: Deploy na VM via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          cd ~/flask-api || git clone https://github.com/EttoreENC/flask-api.git && cd flask-api
+          git pull
+          docker stop flask-api || true
+          docker rm flask-api || true
+          docker build -t flask-api .
+          docker run -d -p 80:80 --name flask-api flask-api
